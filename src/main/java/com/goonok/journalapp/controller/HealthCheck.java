@@ -1,4 +1,4 @@
-package com.goonok.journalapp;
+package com.goonok.journalapp.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
