@@ -2,6 +2,7 @@ package com.goonok.journalapp.controller;
 
 import com.goonok.journalapp.entity.JournalEntity;
 import com.goonok.journalapp.service.JournalEntryService;
+import com.goonok.journalapp.service.UserService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,9 +25,11 @@ public class JournalControllerV2 {
     @Autowired
     JournalEntryService journalEntryService;
 
+    @Autowired
+    private UserService userService;
 
     @GetMapping
-    public ResponseEntity<?> getAllJournals() {
+    public ResponseEntity<?> getAllJournalsOfUser() {
         List<JournalEntity> all = journalEntryService.getAllJournalEntries();
 
         if (all != null && !all.isEmpty()) {

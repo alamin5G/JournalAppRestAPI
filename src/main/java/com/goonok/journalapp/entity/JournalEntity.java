@@ -1,13 +1,12 @@
 package com.goonok.journalapp.entity;
 
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import jdk.jfr.Relational;
+import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.time.LocalDateTime;
 
@@ -17,11 +16,17 @@ public class JournalEntity {
 
     @Id
     private ObjectId id;
+    @NonNull
     private String title;
+
     private String journal;
     private String notes;
 
     private LocalDateTime publishedDate;
+
+    @DocumentReference
+    private User user;
+
 
 
 }
