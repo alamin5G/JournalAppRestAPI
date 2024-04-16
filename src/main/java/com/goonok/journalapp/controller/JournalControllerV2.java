@@ -1,6 +1,7 @@
 package com.goonok.journalapp.controller;
 
 import com.goonok.journalapp.entity.JournalEntity;
+import com.goonok.journalapp.entity.User;
 import com.goonok.journalapp.service.JournalEntryService;
 import com.goonok.journalapp.service.UserService;
 import org.bson.types.ObjectId;
@@ -28,9 +29,10 @@ public class JournalControllerV2 {
     @Autowired
     private UserService userService;
 
-    @GetMapping
-    public ResponseEntity<?> getAllJournalsOfUser() {
-        List<JournalEntity> all = journalEntryService.getAllJournalEntries();
+    @GetMapping("{username}")
+    public ResponseEntity<?> getAllJournalsOfUser(@PathVariable String username) {
+        User user = userService.findUserByUserName(username);
+        List<JournalEntity> all = user.getJournalEntityList();
 
         if (all != null && !all.isEmpty()) {
             return new ResponseEntity<>(all, HttpStatus.OK);
