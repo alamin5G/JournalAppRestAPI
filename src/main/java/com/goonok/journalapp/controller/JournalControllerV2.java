@@ -4,18 +4,18 @@ import com.goonok.journalapp.entity.JournalEntity;
 import com.goonok.journalapp.service.JournalEntryService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /*
     //TODO - This controller is used to save the journal data into MongoDB
     // The calling stack = Controller => Service => Repository;
+    // now setting up the http return code by ResponseEntity
  */
 @RestController
 @RequestMapping("/journal")
@@ -26,41 +26,57 @@ public class JournalControllerV2 {
 
 
     @GetMapping
-    public List<JournalEntity> getAllJournals() {
+    public ResponseEntity<?> getAllJournals() {
+        List<JournalEntity> all = journalEntryService.getAllJournalEntries();
 
-        return journalEntryService.getAllJournalEntries();
+        if (all != null && !all.isEmpty()) {
+            return new ResponseEntity<>(all, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping
-    public JournalEntity postMapping(@RequestBody JournalEntity journalEntity){
-        journalEntity.setPublishedDate(LocalDateTime.now());
-        journalEntryService.saveJournalEntity(journalEntity);
-        return journalEntity;
+    public ResponseEntity<?> postMapping(@RequestBody JournalEntity journalEntity) {
+        try {
+            journalEntity.setPublishedDate(LocalDateTime.now());
+            journalEntryService.saveJournalEntity(journalEntity);
+            return new ResponseEntity<>(journalEntity, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/id/{myId}")
-    public JournalEntity getJournalEntityById(@PathVariable ObjectId myId){
+    public ResponseEntity<?> getJournalEntityById(@PathVariable ObjectId myId) {
 
+        Optional<JournalEntity> journal = journalEntryService.findJournalEntryById(myId);
+        if (journal.isPresent()) {
+            return new ResponseEntity<>(journal.get(), HttpStatus.OK);
+        }
 
-        return journalEntryService.findJournalEntryById(myId).orElse(null);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
     }
 
     @DeleteMapping("/id/{journalId}")
-    public boolean deleteJournalEntityByJournalId(@PathVariable ObjectId journalId){
+    public ResponseEntity<?> deleteJournalEntityByJournalId(@PathVariable ObjectId journalId) {
         journalEntryService.deleteJournalEntryById(journalId);
-        return true;
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/id/{journalId}")
-    public JournalEntity updateJournalEntityByJournalId(@PathVariable ObjectId journalId, @RequestBody JournalEntity newEntry) {
+    public ResponseEntity<?> updateJournalEntityByJournalId(@PathVariable ObjectId journalId, @RequestBody JournalEntity newEntry) {
         JournalEntity journal = journalEntryService.findJournalEntryById(journalId).orElse(null);
         if (journal != null) {
             newEntry.setPublishedDate(LocalDateTime.now());
             journal.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().isEmpty() ? newEntry.getTitle() : journal.getTitle());
             journal.setJournal(newEntry.getJournal() != null && !newEntry.getJournal().isEmpty() ? newEntry.getJournal() : journal.getJournal());
             journal.setNotes(newEntry.getNotes() != null && !newEntry.getNotes().isEmpty() ? newEntry.getNotes() : journal.getNotes());
+            journalEntryService.saveJournalEntity(journal);
+            return new ResponseEntity<>(journal, HttpStatus.ACCEPTED);
         }
-        journalEntryService.saveJournalEntity(journal);
-        return journal;
-        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 }
