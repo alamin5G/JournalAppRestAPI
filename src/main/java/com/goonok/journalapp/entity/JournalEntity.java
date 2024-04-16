@@ -1,11 +1,30 @@
 package com.goonok.journalapp.entity;
 
+
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDateTime;
+
+@Document(collection = "journal_entries")
 public class JournalEntity {
 
-    private long id;
+    @Id
+    private ObjectId id;
     private String title;
     private String journal;
     private String notes;
+
+    private LocalDateTime publishedDate;
+
+    public LocalDateTime getPublishedDate() {
+        return publishedDate;
+    }
+
+    public void setPublishedDate(LocalDateTime publishedDate) {
+        this.publishedDate = publishedDate;
+    }
 
     public String getJournal() {
         return journal;
@@ -15,11 +34,11 @@ public class JournalEntity {
         this.journal = journal;
     }
 
-    public long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 

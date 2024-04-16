@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/journal")
+@RequestMapping("/-journal")
 public class JournalController {
 
     private Map<Long, JournalEntity> journalEntityMap = new HashMap<>();
@@ -22,7 +22,9 @@ public class JournalController {
 
     @PostMapping
     public boolean postMapping(@RequestBody JournalEntity journalEntity){
-        journalEntityMap.put(journalEntity.getId(),journalEntity);
+
+        //todo - comment out due to change the id type long to String
+        //journalEntityMap.put(journalEntity.getId(),journalEntity);
         return true;
     }
 
