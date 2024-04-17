@@ -29,7 +29,7 @@ public class JournalControllerV2 {
     @Autowired
     private UserService userService;
 
-    @GetMapping("{username}")
+    @GetMapping("/{username}")
     public ResponseEntity<?> getAllJournalsOfUser(@PathVariable String username) {
         User user = userService.findUserByUserName(username);
         List<JournalEntity> all = user.getJournalEntityList();
@@ -41,11 +41,11 @@ public class JournalControllerV2 {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<?> postMapping(@RequestBody JournalEntity journalEntity) {
+    @PostMapping("/{username}")
+    public ResponseEntity<?> postMapping(@RequestBody JournalEntity journalEntity, @PathVariable String username) {
         try {
             journalEntity.setPublishedDate(LocalDateTime.now());
-            journalEntryService.saveJournalEntity(journalEntity);
+            journalEntryService.saveJournalEntity(journalEntity, username);
             return new ResponseEntity<>(journalEntity, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -64,14 +64,14 @@ public class JournalControllerV2 {
 
     }
 
-    @DeleteMapping("/id/{journalId}")
-    public ResponseEntity<?> deleteJournalEntityByJournalId(@PathVariable ObjectId journalId) {
-        journalEntryService.deleteJournalEntryById(journalId);
+    @DeleteMapping("/{username}/{journalId}")
+    public ResponseEntity<?> deleteJournalEntityByJournalId(@PathVariable String username,@PathVariable ObjectId journalId) {
+        journalEntryService.deleteJournalEntryById(username, journalId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/id/{journalId}")
-    public ResponseEntity<?> updateJournalEntityByJournalId(@PathVariable ObjectId journalId, @RequestBody JournalEntity newEntry) {
+    @PutMapping("/{username}/{journalId}")
+    public ResponseEntity<?> updateJournalEntityByJournalId(@PathVariable String username, @PathVariable ObjectId journalId, @RequestBody JournalEntity newEntry) {
         JournalEntity journal = journalEntryService.findJournalEntryById(journalId).orElse(null);
         if (journal != null) {
             newEntry.setPublishedDate(LocalDateTime.now());

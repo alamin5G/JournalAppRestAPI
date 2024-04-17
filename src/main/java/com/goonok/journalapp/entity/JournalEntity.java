@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 
 @Document(collection = "journal_entries")
 @Data //is equal to getter, setter, toString, and more..
+@NoArgsConstructor //required for deserialization from json to pojo
 public class JournalEntity {
 
     @Id
@@ -23,10 +24,5 @@ public class JournalEntity {
     private String notes;
 
     private LocalDateTime publishedDate;
-
-    @DocumentReference
-    private User user;
-
-
 
 }
