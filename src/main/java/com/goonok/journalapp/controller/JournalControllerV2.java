@@ -41,6 +41,7 @@ public class JournalControllerV2 {
         }
     }
 
+
     @PostMapping("/{username}")
     public ResponseEntity<?> postMapping(@RequestBody JournalEntity journalEntity, @PathVariable String username) {
         try {
